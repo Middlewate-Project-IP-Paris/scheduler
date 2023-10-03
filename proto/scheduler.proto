@@ -1,0 +1,36 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package scheduler;
+
+service SchedulerService {
+    rpc CreateScheduler (SchedulerRequest) returns (SchedulerResponse);
+    rpc GetAllSchedulers (google.protobuf.Empty) returns (SchedulerList);
+    rpc ModifyScheduler (ModifySchedulerRequest) returns (SchedulerResponse);
+}
+
+message SchedulerRequest {
+    string name = 1;
+    string target_service_method = 2;
+    int32 repeat_minutes = 3;
+}
+
+message SchedulerResponse {
+    string id = 1;
+    string name = 2;
+    string target_service_method = 3;
+    int32 repeat_minutes = 4;
+}
+
+message ModifySchedulerRequest {
+    string id = 1;
+    string name = 2;
+    string target_service_method = 3;
+    int32 repeat_minutes = 4;
+}
+
+message SchedulerList {
+    repeated SchedulerResponse schedulers = 1;
+}
+
