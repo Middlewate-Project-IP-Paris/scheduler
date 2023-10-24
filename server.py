@@ -9,6 +9,7 @@ from scheduler import scheduler
 import threading
 import time
 
+
 class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
     def __init__(self):
         self.schedulers = []
@@ -25,10 +26,10 @@ class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
         self.schedulers.append(scheduler_response)
 
         scheduler_instance = scheduler.Scheduler(scheduler_id=scheduler_response.id,
-                                                 name=scheduler_response.name, 
-                                                 target_service_method= scheduler_response.target_service_method,
-                                                 repeat_minutes= scheduler_response.repeat_minutes)
-        scheduler_instance.create_scheduler()
+                                                 name=scheduler_response.name,
+                                                 target_service_method=scheduler_response.target_service_method,
+                                                 repeat_minutes=scheduler_response.repeat_minutes)
+        scheduler_instance.start()
         print(scheduler_response)
 
         return scheduler_response
@@ -51,9 +52,10 @@ class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
         while True:
             # Sleep for the specified number of minutes
             time.sleep(60 * scheduler.repeat_minutes)
-            
+
             # Implement logic to call the target service method here
             print(f"Executing task: {scheduler.target_service_method} for {scheduler.name}")
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -63,6 +65,6 @@ def serve():
     print("Server started on port 50053")
     server.wait_for_termination()
 
+
 if __name__ == '__main__':
-    # test
     serve()
