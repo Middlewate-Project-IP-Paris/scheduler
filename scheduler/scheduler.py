@@ -19,50 +19,48 @@ def on_method_action(action_name):
     assistant = grpc.insecure_channel(f'''localhost:{vars.ASSISTANT_SERVICE_PORT}''')
     stub_ch = channel_pb2_grpc.channelServiceStub(channel)
     stub_as = assistant_on_demand_pb2_grpc.assistanceOnDemandStub(assistant)
-    if action_name == 'updateChannels':
-        empty_request = channel_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty
-        stub_ch.getChannels(request=empty_request)
-#        for channel_id in stub_ch.getChannels(request=empty_request):
-#            print(channel_id)
     if action_name == 'getPosts':
         timestamp = Timestamp()
-        t = Timestamp()
+        timestamp.FromDatetime(datetime.datetime.fromtimestamp(1697897680))
+        #t = Timestamp()
         #t1 = timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078))
         #t.CopyFrom(timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078)))
         #print("type %s", type(timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078))))
-        request = channel_pb2.GetPostsRequest(channel_ids=(3, 5), moment=timestamp.GetCurrentTime())
-        stub_ch.getPosts(request=request)
+        request = channel_pb2.GetPostsRequest(channel_ids=[1])
+        request.moment.CopyFrom(timestamp)
+        response = stub_ch.getPosts(request=request)
+        print(response)
+        for dict_ch_post in response.channels_posts:
+            channel_id = dict_ch_post.channel_id
+            try:
+                for post_id in dict_ch_post.posts:
+                    request = assistant_on_demand_pb2.PostRequest(channel_id=channel_id, post_id=post_id)
+                    stub_as.getPost(request)
+            except AttributeError:
+                print("No new posts")
     if action_name == 'getPostStat':
-        request = channel_pb2.PostStatRequest(channel_id=3, post_id=4)
-        stub_ch.getPostStat(request=request)
+        request = channel_pb2.GetPosts(channel_id=3, post_id=4)
+        response = stub_ch.getPost(request=request)
+        for dict_ch_post in response.values():
+            channel_id = dict_ch_post['channel_id']
+            for post_id in dict_ch_post['posts']:
+                request = assistant_on_demand_pb2.PostStatRequest(channel_id=channel_id, post_id=post_id)
+                stub_as.getPostStat(request)
     if action_name == 'getChannelInfo':
-        request = channel_pb2.ChannelInfoRequest(channel_id=(3, 5))
-        stub_ch.getChannelInfo(request=request)
-    if action_name == 'getChannelSubsHistory':
-        request = channel_pb2.ChannelSubsHistoryRequest(channel_id=(3, 5))
-        stub_ch.getChannelSubsHistory(request=request)
-    if action_name == 'getPostStatHistory':
-        request = channel_pb2.PostStatHistoryRequest(channel_id=(3, 5), history_type=(1, 2))
-        stub_ch.getPostStatHistory(request=request)
-    if action_name == 'subCount':
-        # request = {'channel_id': -1001604616173}
-        request = assistant_on_demand_pb2.ChannelSubsRequest(channel_id=-1001604616173)
-        stub_as.getChannelSubs(request)
-#        for subs in stub_as.getChannelSubs(request=request):
-#            print(subs)
-    if action_name == 'channelMeta':
-        request = assistant_on_demand_pb2.ChannelMetaRequest(channel_id=-1001604616173)
-        stub_as.getChannelSubs(request)
-#        for info in stub_as.getChannelMeta(request=request):
-#            print(info)
-    if action_name == 'postStat':
-        request = assistant_on_demand_pb2.PostStatRequest(channel_id=-1001604616173, post_id=3)
-        stub_as.getChannelSubs(request)
-#        for info in stub_as.getPostStat(request=request):
-#            print(info)
-    if action_name == 'postContent':
-        request = assistant_on_demand_pb2.PostRequest(channel_id=-1001604616173, post_id=3)
-        stub_as.getChannelSubs(request)
+        empty_request = channel_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty
+        response = stub_ch.getChannels(request=empty_request)
+        for channel in response:
+            channel_id = channel['channel_id']
+            request = assistant_on_demand_pb2.ChannelMetaRequest(channel_id=channel_id)
+            stub_as.getChannelMeta(request)
+    if action_name == 'getChannelSubs':
+        empty_request = channel_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty
+        response = stub_ch.getChannels(request=empty_request)
+        for channel in response:
+            channel_id = channel['channel_id']
+            request = assistant_on_demand_pb2.ChannelSubsRequest(channel_id=channel_id)
+            stub_as.getChannelSubs(request)
+
 
 
 
