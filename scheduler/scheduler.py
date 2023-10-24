@@ -103,23 +103,28 @@ class Scheduler:
         # elif self.target_service_method == 'updateChannelsInfo':
         #     # channel_
 #        pass
+    def repeat_task(self):
+        self.scheduler.enter(self.repeat_minutes, 1, on_method_action, self.target_service_method)
+        self.scheduler.enter(self.repeat_minutes, 1, self.repeat_task, ())
 
-    def run(self, action, action_args=()):
+    def run(self):
         if self.is_running:
-            print(self.scheduler.queue)
-            self.event = self.scheduler.enter(self.repeat_minutes, 1, self.run, (action, action_args))
+            self.repeat_task()
+            self.scheduler.run()
+#            print(self.scheduler.queue)
+#            self.event = self.scheduler.enter(self.repeat_minutes, 1, self.run, (action, action_args))
 
-            action(*action_args)
+#            action(*action_args)
 
     def start(self):
         self.is_running = True
-        self.run(on_method_action(self.target_service_method))
-        self.scheduler.run()
+        self.run()
+#        self.scheduler.run()
 
     def stop(self):
         self.is_running = False
-        if self.scheduler and self.event:
-            self.scheduler.cancel(self.event)
+#        if self.scheduler and self.event:
+#            self.scheduler.cancel(self.event)
 
     def modify_scheduler(self):
         pass
