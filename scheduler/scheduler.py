@@ -33,7 +33,7 @@ def on_method_action(action_name):
         for dict_ch_post in response.channels_posts:
             channel_id = dict_ch_post.channel_id
             try:
-                for post_id in dict_ch_post.posts:
+                for post_id in dict_ch_post.post_id:
                     request = assistant_on_demand_pb2.PostRequest(channel_id=channel_id, post_id=post_id)
                     stub_as.getPost(request)
             except AttributeError:
@@ -46,12 +46,13 @@ def on_method_action(action_name):
         response = stub_ch.getPosts(request=request)
         for dict_ch_post in response.channels_posts:
             channel_id = dict_ch_post.channel_id
-            try:
-                for post_id in dict_ch_post.posts:
-                    request = assistant_on_demand_pb2.PostStatRequest(channel_id=channel_id, post_id=post_id)
-                    stub_as.getPost(request)
-            except AttributeError:
-                print("No new posts")
+            print(channel_id)
+            #try:
+            for post_id in dict_ch_post.post_id:
+                request = assistant_on_demand_pb2.PostStatRequest(channel_id=channel_id, post_id=post_id)
+                stub_as.getPost(request)
+            #except AttributeError:
+                #print("No new posts")
     if action_name == 'getChannelInfo':
         empty_request = channel_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty()
         response = stub_ch.getChannels(request=empty_request)
