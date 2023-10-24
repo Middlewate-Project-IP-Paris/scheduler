@@ -107,6 +107,7 @@ class Scheduler:
     def run(self, action, action_args=()):
         if self.is_running:
             self.event = self.scheduler.enter(self.repeat_minutes, 1, self.run, (action, action_args))
+            print(self.scheduler.queue)
             action(*action_args)
 
     def start(self):
