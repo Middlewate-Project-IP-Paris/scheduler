@@ -104,10 +104,11 @@ class Scheduler:
         #     # channel_
 #        pass
 
-    def run(self, action, action_args=()):
+    def run(self, action, action_args):
         if self.is_running:
-            self.event = self.scheduler.enter(self.repeat_minutes, 1, self.run, (action, action_args))
             print(self.scheduler.queue)
+            self.event = self.scheduler.enter(self.repeat_minutes, 1, self.run, (action, action_args))
+
             action(*action_args)
 
     def start(self):
