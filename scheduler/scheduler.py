@@ -73,8 +73,6 @@ def on_method_action(action_name):
             stub_as.getChannelSubs(request)
 
 
-
-
 class Scheduler:
     def __init__(self, scheduler_id, name, target_service_method, repeat_minutes):
         self.scheduler = sched.scheduler(time.time, time.sleep)
