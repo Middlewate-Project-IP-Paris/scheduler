@@ -8,6 +8,7 @@ from proto import scheduler_pb2_grpc
 from scheduler import scheduler
 import threading
 import time
+from multiprocessing import Process
 
 
 class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
@@ -29,7 +30,8 @@ class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
                                                  name=scheduler_response.name,
                                                  target_service_method=scheduler_response.target_service_method,
                                                  repeat_minutes=scheduler_response.repeat_minutes)
-        scheduler_instance.start()
+        p = Process(target=scheduler_instance.start())
+        p.start()
         print(scheduler_response)
 
         return scheduler_response
