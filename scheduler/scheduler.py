@@ -26,7 +26,11 @@ def on_method_action(action_name):
 #            print(channel_id)
     if action_name == 'getPosts':
         timestamp = Timestamp()
-        request = channel_pb2.GetPostsRequest(channel_ids=(3, 5), moment=timestamp.FromDatetime(datetime.datetime.fromtimestamp(232342143)))
+        t = Timestamp()
+        #t1 = timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078))
+        #t.CopyFrom(timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078)))
+        #print("type %s", type(timestamp.FromDatetime(datetime.datetime.fromtimestamp(1549836078))))
+        request = channel_pb2.GetPostsRequest(channel_ids=(3, 5), moment=timestamp.GetCurrentTime())
         stub_ch.getPosts(request=request)
     if action_name == 'getPostStat':
         request = channel_pb2.PostStatRequest(channel_id=3, post_id=4)
