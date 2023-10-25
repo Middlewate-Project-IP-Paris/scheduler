@@ -30,12 +30,11 @@ class SchedulerService(scheduler_pb2_grpc.SchedulerServiceServicer):
                                                  name=scheduler_response.name,
                                                  target_service_method=scheduler_response.target_service_method,
                                                  repeat_minutes=scheduler_response.repeat_minutes)
-        p = Process(target=scheduler_instance.start)
-        p.start()
-        print(scheduler_response)
+        scheduler_thread = threading.Thread(target=scheduler_instance.start)
+        scheduler_thread.start()
+        # print(scheduler_response)
 
-        try: return scheduler_response
-        finally: scheduler_instance.start()
+        return scheduler_response
 
     def GetAllSchedulers(self, request, context):
         return scheduler_pb2.SchedulerList(schedulers=self.schedulers)
